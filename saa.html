@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <style></style>
+  </head>
+  <body>
+    <div id="app" >
+        <a href="https://high.fi/pesapallo/json" title="pesapallo">Pesäpallo</a>
+        <!--<a href="https://high.fi/yleisurheilu/json" title="yleisurheilu">Yleisurheilu</a>
+        <a href="https://high.fi/olympialaiset-2018/json" title="olympiaurheilu">Olympiaurheilu</a>
+        -->
+        <button type="button" name="button" @click="getAnswer()">Lue uutisia</button>
+        <h5>{{paikkakunta}}</h5>
+        
+        <table border=1>
+          
+            <td v-for="item in saa" v-if="item.paiva!=today">
+                {{ item.paiva }}
+                {{ item.saa }}
+              <img :src="item.kuvanosoite"></img>    
+            </td>
+          
+        </table>
+          
+        
+        
+    </div>
+
+    <!--scriptien järjestyksellä on väliä-->
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="saa.js"></script>
+  </body>
+</html>
