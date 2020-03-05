@@ -8,21 +8,28 @@
   <body>
     <div id="app" >
         <a href="https://high.fi/pesapallo/json" title="pesapallo">Pesäpallo</a>
-        <!--<a href="https://high.fi/yleisurheilu/json" title="yleisurheilu">Yleisurheilu</a>
-        <a href="https://high.fi/olympialaiset-2018/json" title="olympiaurheilu">Olympiaurheilu</a>
-        -->
-        <button type="button" name="button" @click="getAnswer()">Lue uutisia</button>
-        <h5>{{paikkakunta}}</h5>
         
+        <input type="text" v-model="paikkakunta" @keyup.enter="haePaivamaarat()">
+        <button type="button" name="button" @click="haePaivamaarat()">Ruovesi</button>
         <table border=1>
-          
-            <td v-for="item in saa" v-if="item.paiva!=today">
-                {{ item.paiva }}
-                {{ item.saa }}
-              <img :src="item.kuvanosoite"></img>    
-            </td>
-          
+            <tr>
+                <td v-for="item in paivamaarat">
+<!--<button type="button" name="button" @click="getAnswer()" :id="item">{{item}}</button>-->
+                    <button type="button" name="button" @click="getAnswer()" :id="item">{{item}}</button>
+                </td>
+            </tr>
         </table>
+        
+
+        <div v-for="item in saa">
+            
+                    <p v-if="item.paiva==today">
+                        {{ item.paiva }}
+                        {{ item.saa }}
+                      <img :src="item.kuvanosoite"></img>    
+                    </p>
+        </div>
+
           
         
         
