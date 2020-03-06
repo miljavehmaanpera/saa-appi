@@ -1,90 +1,99 @@
 Vue.component('todo-item', {
-    props: ['todo'],
-    template: '#todo-item-template',//tehdään id, johon voi viitata scriptissä html-puolella
-  });
+  props: ['todo'],
+  template: '#todo-item-template',//tehdään id, johon voi viitata scriptissä html-puolella
+});
 
 var app = new Vue({
-    el: '#app',
-    data: {
-      paikkakunta: 'london',
+  el: '#app',
+  data: {
+      title:'',
+      paikkakunta: '',
       saa:[{
-        paiva:'',
-        kellonaika:'',
-        saa:'',
-        tuuli:'',
-        lampotila:'',
-        ikoni:'',
-        kuvanosoite:'',
+          paiva:'',
+          kellonaika:'',
+          saakuvaus:'',
+          tuuli:'',
+          lampotila:'',
+          ikoni:'',
+          kuvanosoite:'',
+          id: '',
       }],
       today:'',
       paivamaarat:[],
-    },
-  
-    methods: {
-      getAnswer: function () {
-        axios.get('http://api.openweathermap.org/data/2.5/forecast?q='+this.paikkakunta+'&appid=0be24cf7cc7a6b445eec1b2c59fc83cf')
-          .then(function (response) {
-            app.paikkakunta = response.data.city.name;
-            let apu='';
-            for (index = 0; index < response.data.list.length; ++index) {
-              paivamaara_apu = response.data.list[index].dt_txt.split(' ')[0];
+      valittuPaiva:'',
+  },
+
+  methods: {
+    getAnswer: function () {
+      axios.get('http://api.openweathermap.org/data/2.5/forecast?q='+this.paikkakunta+'&units=metric&appid=0be24cf7cc7a6b445eec1b2c59fc83cf')
+        .then(function (response) {
+          //app.paikkakunta = response.data.city.name;
+          
+          for (index = 0; index < response.data.list.length; ++index) {
+              //käytetään apu-muuttujia päivämäärän ja kellonajan pilkkomiseen yksinkertaisempaan muotoon
+              // saatu ajankohta sisältää päivämäärän ja kellonajan, splitataan ensin välilyönnin kohdalta, ensimmäinen osa
+              // on päivämäärä ja toinen osa kellonaika. Tämän jälkeen päivä splitataan väliviivasta, 
+              // josta saadaan eroteltua päivä, kuukausi ja vuosi
+              paivamaara_apu = response.data.list[index].dt_txt.split(' ')[0]; 
               vuosi_apu = paivamaara_apu.split('-')[0];
               kuukausi_apu = paivamaara_apu.split('-')[1];
               paiva_apu = paivamaara_apu.split('-')[2];
               paivamaara = paiva_apu + '.'+ kuukausi_apu + '.'+ vuosi_apu;
-                app.saa.push({
-                //paiva: response.data.list[index].dt_txt.split(' ')[0],
-                paiva: paivamaara,
-                kellonaika: response.data.list[index].dt_txt.split(' ')[1],
-                saa: response.data.list[index].weather[0].description,
-                tuuli: response.data.list[index].wind.speed,
-                lampotila: response.data.list[index].main.temp,
-                ikoni: response.data.list[index].weather[0].icon,
-                kuvanosoite: "http://openweathermap.org/img/wn/"+response.data.list[index].weather[0].icon+"@2x.png"
-              });
-            }
-          })
-          .catch(function (error) {
-            app.title = 'Error! Could not reach the API. ' + error
-          })
- 
-          //app.today = new Date().toISOString().slice(0, 10)
 
-          /* for (index = 0; index < 6; ++index) {
+              //kellonaika splitataan kaksoispisteestä, ja jätetään sekunnit pois näytettävästä osasta
+              kellonaika_apu = response.data.list[index].dt_txt.split(' ')[1];
+              tunnit = kellonaika_apu.split(':')[0];
+              minuutit = kellonaika_apu.split(':')[1];
+              kellonaika = tunnit + '.' + minuutit;
 
-              var someDate = new Date();
-              var numberOfDaysToAdd = index;
-              someDate.setDate(someDate.getDate() + numberOfDaysToAdd);
-              var dd = someDate.getDate();
-              var mm = someDate.getMonth() + 1;
-              var y = someDate.getFullYear();
-              var someFormattedDate = dd + '.'+ mm + '.'+ y;
-              app.paivamaarat.push(someFormattedDate);    
+              // lisätään säätieto muokatun päivämäärän ja kellonajan kanssa sää-listalle
+              
+              app.saa.push({
+              paiva: paivamaara,
+              kellonaika: 'klo ' + kellonaika,
+              saakuvaus: response.data.list[index].weather[0].description,
+              tuuli: response.data.list[index].wind.speed + ' m/s',
+              lampotila: response.data.list[index].main.temp + ' °C',
+              kuvanosoite: "http://openweathermap.org/img/wn/"+response.data.list[index].weather[0].icon+"@2x.png",
+            });
           }
+        })
+        .catch(function () {
+          app.title = 'Paikkakuntaa ei löydy!' 
+        })
 
-          app.today = app.paivamaarat[0]; */
-          
-          
-
-   
-      },
-      haePaivamaarat: function(){
-          for (index = 0; index < 6; ++index) {
-
-              var someDate = new Date();
-              var numberOfDaysToAdd = index;
-              someDate.setDate(someDate.getDate() + numberOfDaysToAdd);
-              var dd = someDate.getDate();
-              var mm = someDate.getMonth() + 1;
-              var y = someDate.getFullYear();
-              DateString = (('0'+dd).slice(-2) +'.'+ ('0'+mm).slice(-2) +'.'+ y);
-              //var someFormattedDate = dd + '.'+ mm + '.'+ y;
-              var someFormattedDate = dd + '.'+ mm + '.'+ y;
-              app.paivamaarat.push(DateString);    
-          }
-
-          app.today = app.paivamaarat[0]; 
-      }, 
-            
     },
-  })
+    haePaivamaarat: function(){
+      // tyhjennetään ensin vanhat tiedot listoilta
+        app.paivamaarat=[];
+        app.saa = [];
+        // haetaan tämä päivä ja viisi seuraavaa päivää
+        for (index = 0; index < 6; ++index) { 
+            var someDate = new Date(); //haetaan tämä päivä
+            someDate.setDate(someDate.getDate() + index); // lisätään tähän päivään kierrosluvun mukainen määrä päiviä
+            var paiva = someDate.getDate(); // irrotetaan saadusta päivämäärästä päivä
+            var kk = someDate.getMonth() + 1; // irrotetaan saadusta päivämäärästä kuukausi
+            var vuosi = someDate.getFullYear(); // irrotetaan saadusta päivämäärästä vuosi
+            // muotoillaan päivämäärä uudestaan siten, että yksittäisten numeroiden eteen tulee nolla
+            // eli lisätään päivän ja kuukauden numeron eteen nolla ja sen jälkeen valitaan kaksi viimeistä merkkiä
+            DateString = (('0'+paiva).slice(-2) +'.'+ ('0'+kk).slice(-2) +'.'+ vuosi); 
+            
+            //lisätään kierroksen päätteeksi päivämäärä listalle              
+            app.paivamaarat.push(DateString); 
+        }
+
+        //tämä päivä on päivämäärälistan ensimmäisenä alkiona
+        app.today = app.paivamaarat[0]; 
+
+        // kutsutaan funktiota, joka hakee säätiedot
+        this.getAnswer();
+    },
+    asetaPaiva: function(){
+        app.valittuPaiva = event.target.id;
+      },
+      asetaPaikkakunta: function(kunta){
+          app.paikkakunta = kunta;
+          this.haePaivamaarat();
+        },  
+  },
+})
