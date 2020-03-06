@@ -3,49 +3,31 @@
   <head>
     <meta charset="utf-8">
     <title></title>
-    <style>
-        .samaRivi{
-            display: inline-block;
-        }
-        #saaruutu{
-
-              color: black;
-              padding: 15px;
-        }
-        button{
-            background-color:steelblue;
-            font-weight: bold;
-            padding: 3px 10px;
-            border-radius: 15px;
-            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2) 6px 20px 0 rgba(0,0,0,0.19);
-        }
-
-        body{
-            background-color:powderblue;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
     <div id="app">
         <!--<a href="https://high.fi/pesapallo/json" title="pesapallo">Pesäpallo</a>-->
-        <div align='center'>
+        <div align='center' id="paavalikko">
             <saaennuste></saaennuste>
             <input type="text" v-model="paikkakunta" @keyup.enter="haePaivamaarat()">
             <button type="button" name="button" @click="haePaivamaarat()">Hae</button>
-
+ 
             <br><br>
 
             <div class='samaRivi' v-for="item in paivamaarat">
                 <button type="button" name="button" @click="asetaPaiva()" :id="item">{{ item }}</button>
             </div>
-        </div>
 
+        </div>
+        <h2 align='center'>{{valittuPaiva}}</h2>
         <br><br>
+
 
         <!-- komponentti, tulostaa säätiedot näkyville -->
         <saa-item class='samaRivi' id="saaruutu" v-for="item in saa" v-if="item.paiva==valittuPaiva" v-bind:key="item.id" :saa="item"></saa-item>
          
-        {{title}} <!--  tähän tulostuu virheilmoitus, jos etsittyä kaupunkia ei löydy-->
+        <h4 align='center'>{{title}}</h4> <!--  tähän tulostuu virheilmoitus, jos etsittyä kaupunkia ei löydy-->
 
 
         <!--<h5>Suosikit:</h5>

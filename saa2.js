@@ -1,7 +1,6 @@
 Vue.component('saa-item', {
   props: ['saa'],
   template: `<div>
-                <p> {{ saa.paiva }} </p>
                 <p> {{ saa.kellonaika }} </p>
                 <p> {{ saa.lampotila }} </p>
                 <p> {{ saa.tuuli }} </p>
@@ -21,6 +20,7 @@ var app = new Vue({
       paikkakunta: '',
       saa:[{
           paiva:'',
+          viikonpaiva: '',
           kellonaika:'',
           saakuvaus:'',
           tuuli:'',
@@ -89,13 +89,15 @@ var app = new Vue({
             // muotoillaan päivämäärä uudestaan siten, että yksittäisten numeroiden eteen tulee nolla
             // eli lisätään päivän ja kuukauden numeron eteen nolla ja sen jälkeen valitaan kaksi viimeistä merkkiä
             DateString = (('0'+paiva).slice(-2) +'.'+ ('0'+kk).slice(-2) +'.'+ vuosi); 
-            
-            //lisätään kierroksen päätteeksi päivämäärä listalle              
-            app.paivamaarat.push(DateString); 
+            //var viikonpaivat = ['sunnuntai','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+            //var viikonpaiva  = viikonpaivat[someDate.getDay()];
+            //lisätään kierroksen päätteeksi päivämäärä listalle  
+            app.paivamaarat.push(DateString);            
+            //app.paivamaarat.push({paivamaara: DateString, viikonpaiva: viikonpaiva}); 
         }
 
         //tämä päivä on päivämäärälistan ensimmäisenä alkiona
-        app.today = app.paivamaarat[0]; 
+        app.today = app.paivamaarat[0].paivamaara; 
 
         // kutsutaan funktiota, joka hakee säätiedot
         this.getAnswer();
