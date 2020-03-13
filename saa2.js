@@ -2,11 +2,14 @@ Vue.component('saa-item', {
   props: ['saa'],
   template: `<div>
                 <p> {{ saa.kellonaika }} </p>
-                <p> {{ saa.lampotila }} </p>
+                <p v-if="saa.lampotila < '0'" class="miinusAsteita"> {{ saa.lampotila }} </p>
+                <p v-if="saa.lampotila > '0'" class="plusAsteita"> {{ saa.lampotila }} </p>
                 <p> {{ saa.tuuli }} </p>
                 <img :src="saa.kuvanosoite"></img> 
-        </div>`,
+            </div>`,
 })
+//<p v-if="saa.lampotila < '0'" :style=color:"blue"> {{ saa.lampotila }} </p>
+// <p style="saa.lampotila < '0' {'color':'red'}">{{ saa.lampotila }}</p>
 
 
 Vue.component('saaennuste', {
