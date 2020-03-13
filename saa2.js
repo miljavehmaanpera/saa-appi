@@ -16,11 +16,11 @@ Vue.component('saaennuste', {
 var app = new Vue({
   el: '#app',
   data: {
-      title:'',
+      virheilmoitus:'',
       paikkakunta: '',
       saa:[{
           paiva:'',
-          viikonpaiva: '',
+          //viikonpaiva: '',
           kellonaika:'',
           saakuvaus:'',
           tuuli:'',
@@ -30,8 +30,11 @@ var app = new Vue({
           id: '',
       }],
       today:'',
-      paivamaarat:[],
-      valittuPaiva:'',
+      paivamaarat:[{
+        paivamaara:'',
+        viikonpaiva:'',
+      }],
+      valittuPaiva: '',
   },
 
   methods: {
@@ -70,15 +73,15 @@ var app = new Vue({
           }
         })
         .catch(function () {
-          app.title = 'Paikkakuntaa ei löydy!' 
+          app.virheilmoitus = 'Paikkakuntaa ei löydy!' 
         })
 
     },
     haePaivamaarat: function(){
-      // tyhjennetään ensin vanhat tiedot listoilta
+      // tyhjennetään ensin vanhat tiedot listoilta / muuttujista
         app.paivamaarat=[];
         app.saa = [];
-        app.title = '';
+        app.virheilmoitus = '';
         // haetaan tämä päivä ja viisi seuraavaa päivää
         for (index = 0; index < 6; ++index) { 
             var someDate = new Date(); //haetaan tämä päivä
@@ -88,12 +91,13 @@ var app = new Vue({
             var vuosi = someDate.getFullYear(); // irrotetaan saadusta päivämäärästä vuosi
             // muotoillaan päivämäärä uudestaan siten, että yksittäisten numeroiden eteen tulee nolla
             // eli lisätään päivän ja kuukauden numeron eteen nolla ja sen jälkeen valitaan kaksi viimeistä merkkiä
-            DateString = (('0'+paiva).slice(-2) +'.'+ ('0'+kk).slice(-2) +'.'+ vuosi); 
-            //var viikonpaivat = ['sunnuntai','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
-            //var viikonpaiva  = viikonpaivat[someDate.getDay()];
-            //lisätään kierroksen päätteeksi päivämäärä listalle  
-            app.paivamaarat.push(DateString);            
-            //app.paivamaarat.push({paivamaara: DateString, viikonpaiva: viikonpaiva}); 
+            DateString = (('0'+paiva).slice(-2) +'.'+ ('0'+kk).slice(-2) +'.'+ vuosi);
+            // haetaan päivämäärää vastaava viikonpäivä
+            var weekdays = ['su','ma','ti','ke','to','pe','la'];
+            var weekday  = weekdays[someDate.getDay()];
+            //lisätään kierroksen päätteeksi päivämäärä+viikonpäivä listalle  
+            //app.paivamaarat.push(DateString);            
+            app.paivamaarat.push({paivamaara: DateString, viikonpaiva: weekday}); 
         }
 
         //tämä päivä on päivämäärälistan ensimmäisenä alkiona
