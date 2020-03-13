@@ -26,8 +26,10 @@ body{
 
 .miinusAsteita{
     color: blue;
+    font-size: 20px;
 }
 
 .plusAsteita{
     color: red;
+    font-size: 20px;
 }

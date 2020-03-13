@@ -1,15 +1,24 @@
 Vue.component('saa-item', {
   props: ['saa'],
-  template: `<div>
-                <p> {{ saa.kellonaika }} </p>
-                <p v-if="saa.lampotila < '0'" class="miinusAsteita"> {{ saa.lampotila }} </p>
-                <p v-if="saa.lampotila > '0'" class="plusAsteita"> {{ saa.lampotila }} </p>
-                <p> {{ saa.tuuli }} </p>
-                <img :src="saa.kuvanosoite"></img> 
+  template: `<div valign='top'  >
+                <p align='center'> {{ saa.kellonaika }} </p>
+                <img :src="saa.kuvanosoite" align='center'></img> 
+                <p v-if="saa.lampotila < '0'" class="miinusAsteita" align='center'> {{ saa.lampotila }} </p>
+                <p v-if="saa.lampotila > '0'" class="plusAsteita" align='center'> {{ saa.lampotila }} </p>
+
+                <p v-if="saa.tuuli > '6'" align='center'> {{ saa.tuuli }} 
+                  <img src="https://www.freeiconspng.com/uploads/alert-icon-red-11.png" width=20px align='top'></img>
+                </p>
+                <p v-else align='center'> {{ saa.tuuli }}
+                </p>
             </div>`,
 })
+//raja laitettu oman mieltymyksen mukaan, ei perustu oikeisiin määräyksiin
 //<p v-if="saa.lampotila < '0'" :style=color:"blue"> {{ saa.lampotila }} </p>
 // <p style="saa.lampotila < '0' {'color':'red'}">{{ saa.lampotila }}</p>
+//<p> {{ saa.tuuli }} </p>
+//https://www.freeiconspng.com/uploads/alert-icon-red-11.png
+// https://findicons.com/files/icons/480/weather/256/wind_flag_storm.png
 
 
 Vue.component('saaennuste', {
