@@ -3,8 +3,9 @@ Vue.component('saa-item', {
   template: `<div valign='top'  >
                 <p align='center'> {{ saa.kellonaika }} </p>
                 <img :src="saa.kuvanosoite" align='center'></img> 
+
                 <p v-if="saa.lampotila < '0'" class="miinusAsteita" align='center'> {{ saa.lampotila }} </p>
-                <p v-if="saa.lampotila > '0'" class="plusAsteita" align='center'> {{ saa.lampotila }} </p>
+                <p v-if="saa.lampotila > '0'" class="plusAsteita" align='center'> +{{ saa.lampotila }} </p>
 
                 <p v-if="saa.tuuli > '6'" align='center'> {{ saa.tuuli }} 
                   <img src="https://www.freeiconspng.com/uploads/alert-icon-red-11.png" width=20px align='top'></img>
@@ -13,12 +14,8 @@ Vue.component('saa-item', {
                 </p>
             </div>`,
 })
-//raja laitettu oman mieltymyksen mukaan, ei perustu oikeisiin määräyksiin
-//<p v-if="saa.lampotila < '0'" :style=color:"blue"> {{ saa.lampotila }} </p>
-// <p style="saa.lampotila < '0' {'color':'red'}">{{ saa.lampotila }}</p>
-//<p> {{ saa.tuuli }} </p>
-//https://www.freeiconspng.com/uploads/alert-icon-red-11.png
-// https://findicons.com/files/icons/480/weather/256/wind_flag_storm.png
+//tuulen raja laitettu oman mieltymyksen mukaan, ei perustu oikeisiin määräyksiin
+
 
 
 Vue.component('saaennuste', {
@@ -28,67 +25,65 @@ Vue.component('saaennuste', {
 var app = new Vue({
   el: '#app',
   data: {
-      virheilmoitus:'',
-      paikkakunta: '',
-      saa:[{
-          paiva:'',
-          //viikonpaiva: '',
-          kellonaika:'',
-          saakuvaus:'',
-          tuuli:'',
-          lampotila:'',
-          ikoni:'',
-          kuvanosoite:'',
-          id: '',
-      }],
-      today:'',
-      paivamaarat:[{
-        paivamaara:'',
-        viikonpaiva:'',
-      }],
-      valittuPaiva: '',
+    paikkakunta: '',
+    saa:[{
+      paiva:'',
+      kellonaika:'',
+      saakuvaus:'',
+      tuuli:'',
+      lampotila:'',
+      ikoni:'',
+      kuvanosoite:'',
+      id: '',
+    }],
+    tamaPaiva:'',
+    paivamaarat:[{
+      paivamaara:'',
+      viikonpaiva:'',
+    }],
+    valittuPaiva: '',
+    virheilmoitus:'',
   },
 
   methods: {
     getAnswer: function () {
-      axios.get('http://api.openweathermap.org/data/2.5/forecast?q='+this.paikkakunta+'&units=metric&appid=0be24cf7cc7a6b445eec1b2c59fc83cf')
+      axios.get('http://api.openweathermap.org/data/2.5/forecast?q='+app.paikkakunta+'&units=metric&appid=0be24cf7cc7a6b445eec1b2c59fc83cf')
         .then(function (response) {
-          //app.paikkakunta = response.data.city.name;
           
           for (index = 0; index < response.data.list.length; ++index) {
-              //käytetään apu-muuttujia päivämäärän ja kellonajan pilkkomiseen yksinkertaisempaan muotoon
-              // saatu ajankohta sisältää päivämäärän ja kellonajan, splitataan ensin välilyönnin kohdalta, ensimmäinen osa
-              // on päivämäärä ja toinen osa kellonaika. Tämän jälkeen päivä splitataan väliviivasta, 
-              // josta saadaan eroteltua päivä, kuukausi ja vuosi
-              paivamaara_apu = response.data.list[index].dt_txt.split(' ')[0]; 
-              vuosi_apu = paivamaara_apu.split('-')[0];
-              kuukausi_apu = paivamaara_apu.split('-')[1];
-              paiva_apu = paivamaara_apu.split('-')[2];
-              paivamaara = paiva_apu + '.'+ kuukausi_apu + '.'+ vuosi_apu;
+            //käytetään apu-muuttujia päivämäärän ja kellonajan pilkkomiseen yksinkertaisempaan muotoon
+            // saatu ajankohta sisältää päivämäärän ja kellonajan, splitataan ensin välilyönnin kohdalta, ensimmäinen osa
+            // on päivämäärä ja toinen osa kellonaika. Tämän jälkeen päivä splitataan väliviivasta, 
+            // josta saadaan eroteltua päivä, kuukausi ja vuosi
+            paivamaara_apu = response.data.list[index].dt_txt.split(' ')[0]; 
+            vuosi_apu = paivamaara_apu.split('-')[0];
+            kuukausi_apu = paivamaara_apu.split('-')[1];
+            paiva_apu = paivamaara_apu.split('-')[2];
+            paivamaara = paiva_apu + '.'+ kuukausi_apu + '.'+ vuosi_apu;
 
-              //kellonaika splitataan kaksoispisteestä, ja jätetään sekunnit pois näytettävästä osasta
-              kellonaika_apu = response.data.list[index].dt_txt.split(' ')[1];
-              tunnit = kellonaika_apu.split(':')[0];
-              minuutit = kellonaika_apu.split(':')[1];
-              kellonaika = tunnit + '.' + minuutit;
+            //kellonaika splitataan kaksoispisteestä, ja jätetään sekunnit pois näytettävästä osasta
+            kellonaika_apu = response.data.list[index].dt_txt.split(' ')[1];
+            tunnit = kellonaika_apu.split(':')[0];
+            minuutit = kellonaika_apu.split(':')[1];
+            kellonaika = tunnit + '.' + minuutit;
 
-              // lisätään säätieto muokatun päivämäärän ja kellonajan kanssa sää-listalle
+            // lisätään säätieto muokatun päivämäärän ja kellonajan kanssa sää-listalle
               
-              app.saa.push({
-              paiva: paivamaara,
-              kellonaika: 'klo ' + kellonaika,
-              saakuvaus: response.data.list[index].weather[0].description,
-              tuuli: response.data.list[index].wind.speed + ' m/s',
-              lampotila: response.data.list[index].main.temp + ' °C',
-              kuvanosoite: "http://openweathermap.org/img/wn/"+response.data.list[index].weather[0].icon+"@2x.png",
+            app.saa.push({
+            paiva: paivamaara,
+            kellonaika: 'klo ' + kellonaika,
+            saakuvaus: response.data.list[index].weather[0].description,
+            tuuli: response.data.list[index].wind.speed + ' m/s',
+            lampotila: (response.data.list[index].main.temp).toFixed(1) + ' °C',
+            kuvanosoite: "http://openweathermap.org/img/wn/"+response.data.list[index].weather[0].icon+"@2x.png",
             });
           }
         })
         .catch(function () {
           app.virheilmoitus = 'Paikkakuntaa ei löydy!' 
         })
-
     },
+
     haePaivamaarat: function(){
       // tyhjennetään ensin vanhat tiedot listoilta / muuttujista
         app.paivamaarat=[];
@@ -113,17 +108,22 @@ var app = new Vue({
         }
 
         //tämä päivä on päivämäärälistan ensimmäisenä alkiona
-        app.today = app.paivamaarat[0].paivamaara; 
+        app.tamaPaiva = app.paivamaarat[0].paivamaara;
+
+        // jos päivää ei ole vielä valittu/asetettu, laitetaan oletukseksi tämä päivä
+        if(app.valittuPaiva==''){
+          app.valittuPaiva=app.tamaPaiva;
+        }
 
         // kutsutaan funktiota, joka hakee säätiedot
         this.getAnswer();
     },
     asetaPaiva: function(){
-        app.valittuPaiva = event.target.id;
-      },
-      asetaPaikkakunta: function(kunta){
-          app.paikkakunta = kunta;
-          this.haePaivamaarat();
-        },  
+      app.valittuPaiva = event.target.id;
+    },
+    asetaPaikkakunta: function(kunta){
+      app.paikkakunta = kunta;
+      this.haePaivamaarat();
+    },  
   },
 })

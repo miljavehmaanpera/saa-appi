@@ -19,9 +19,14 @@ body{
     background-color:powderblue;
 }
 
+div{
+    font-family: 'Lucida Sans';
+}
+
 #paavalikko{
     background-color: azure;
     padding: 0 0 30px 0;
+    font-size: 15px;
 }
 
 .miinusAsteita{
