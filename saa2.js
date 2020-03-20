@@ -4,13 +4,13 @@ Vue.component('saa-item', {
                 <p align='center'> {{ saa.kellonaika }} </p>
                 <img :src="saa.kuvanosoite" align='center'></img> 
 
-                <p v-if="saa.lampotila < '0'" class="miinusAsteita" align='center'> {{ saa.lampotila }} </p>
-                <p v-if="saa.lampotila > '0'" class="plusAsteita" align='center'> +{{ saa.lampotila }} </p>
+                <p v-if="saa.lampotila.arvo < 0" class="miinusAsteita" align='center'> {{ saa.lampotila.arvo }} {{ saa.lampotila.yksikko }} </p>
+                <p v-if="saa.lampotila.arvo > 0" class="plusAsteita" align='center'> +{{ saa.lampotila.arvo }} {{ saa.lampotila.yksikko }}</p>
 
-                <p v-if="saa.tuuli > '6'" align='center'> {{ saa.tuuli }} 
-                  <img src="https://www.freeiconspng.com/uploads/alert-icon-red-11.png" width=20px align='top'></img>
+                <p v-if="saa.tuuli.arvo > 6" align='center'> {{ saa.tuuli.arvo }} {{saa.tuuli.yksikko}}
+                  <img src="http://www.freeiconspng.com/uploads/alert-icon-red-11.png" width=20px align='top'></img>
                 </p>
-                <p v-else align='center'> {{ saa.tuuli }}
+                <p v-else align='center'> {{ saa.tuuli.arvo }} {{saa.tuuli.yksikko}}
                 </p>
             </div>`,
 })
@@ -30,8 +30,14 @@ var app = new Vue({
       paiva:'',
       kellonaika:'',
       saakuvaus:'',
-      tuuli:'',
-      lampotila:'',
+      tuuli:[{
+        arvo:'',
+        yksikko:'',
+      }],
+      lampotila:[{
+        arvo:'',
+        yksikko:'',
+      }],
       ikoni:'',
       kuvanosoite:'',
       id: '',
@@ -47,9 +53,9 @@ var app = new Vue({
 
   methods: {
     getAnswer: function () {
-      axios.get('http://api.openweathermap.org/data/2.5/forecast?q='+app.paikkakunta+'&units=metric&appid=0be24cf7cc7a6b445eec1b2c59fc83cf')
+      axios.get('https://api.openweathermap.org/data/2.5/forecast?q='+app.paikkakunta+'&units=metric&appid=0be24cf7cc7a6b445eec1b2c59fc83cf')
         .then(function (response) {
-          
+
           for (index = 0; index < response.data.list.length; ++index) {
             //käytetään apu-muuttujia päivämäärän ja kellonajan pilkkomiseen yksinkertaisempaan muotoon
             // saatu ajankohta sisältää päivämäärän ja kellonajan, splitataan ensin välilyönnin kohdalta, ensimmäinen osa
@@ -67,15 +73,15 @@ var app = new Vue({
             minuutit = kellonaika_apu.split(':')[1];
             kellonaika = tunnit + '.' + minuutit;
 
+
             // lisätään säätieto muokatun päivämäärän ja kellonajan kanssa sää-listalle
-              
             app.saa.push({
             paiva: paivamaara,
             kellonaika: 'klo ' + kellonaika,
             saakuvaus: response.data.list[index].weather[0].description,
-            tuuli: response.data.list[index].wind.speed + ' m/s',
-            lampotila: (response.data.list[index].main.temp).toFixed(1) + ' °C',
-            kuvanosoite: "http://openweathermap.org/img/wn/"+response.data.list[index].weather[0].icon+"@2x.png",
+            tuuli: {arvo:Number(response.data.list[index].wind.speed).toFixed(1), yksikko:'m/s'},
+            lampotila: {arvo: Number(response.data.list[index].main.temp).toFixed(1), yksikko: ' °C'},
+            kuvanosoite: "https://openweathermap.org/img/wn/"+response.data.list[index].weather[0].icon+"@2x.png",
             });
           }
         })
