@@ -8,14 +8,12 @@ Vue.component('saa-item', {
                 <p v-if="saa.lampotila.arvo > 0" class="plusAsteita" align='center'> +{{ saa.lampotila.arvo }} {{ saa.lampotila.yksikko }}</p>
 
                 <p v-if="saa.tuuli.arvo > 6" align='center'> {{ saa.tuuli.arvo }} {{saa.tuuli.yksikko}}
-                  <img src="http://www.freeiconspng.com/uploads/alert-icon-red-11.png" width=20px align='top'></img>
+                  <img src="https://www.freeiconspng.com/uploads/alert-icon-red-11.png" width=20px align='top'></img>
                 </p>
                 <p v-else align='center'> {{ saa.tuuli.arvo }} {{saa.tuuli.yksikko}}
                 </p>
             </div>`,
-})
-//tuulen raja laitettu oman mieltymyksen mukaan, ei perustu oikeisiin määräyksiin
-
+})//tuulen raja laitettu oman mieltymyksen mukaan, ei perustu oikeisiin määräyksiin
 
 
 Vue.component('saaennuste', {
@@ -29,7 +27,6 @@ var app = new Vue({
     saa:[{
       paiva:'',
       kellonaika:'',
-      saakuvaus:'',
       tuuli:[{
         arvo:'',
         yksikko:'',
@@ -55,33 +52,32 @@ var app = new Vue({
     getAnswer: function () {
       axios.get('https://api.openweathermap.org/data/2.5/forecast?q='+app.paikkakunta+'&units=metric&appid=0be24cf7cc7a6b445eec1b2c59fc83cf')
         .then(function (response) {
-
-          for (index = 0; index < response.data.list.length; ++index) {
+          //käydään läpi silmukalla apin listaa ja poimitaan halutut tiedot
+          for (i = 0; i < response.data.list.length; ++i) {
             //käytetään apu-muuttujia päivämäärän ja kellonajan pilkkomiseen yksinkertaisempaan muotoon
             // saatu ajankohta sisältää päivämäärän ja kellonajan, splitataan ensin välilyönnin kohdalta, ensimmäinen osa
             // on päivämäärä ja toinen osa kellonaika. Tämän jälkeen päivä splitataan väliviivasta, 
             // josta saadaan eroteltua päivä, kuukausi ja vuosi
-            paivamaara_apu = response.data.list[index].dt_txt.split(' ')[0]; 
-            vuosi_apu = paivamaara_apu.split('-')[0];
-            kuukausi_apu = paivamaara_apu.split('-')[1];
-            paiva_apu = paivamaara_apu.split('-')[2];
-            paivamaara = paiva_apu + '.'+ kuukausi_apu + '.'+ vuosi_apu;
+            var paivamaara_apu = response.data.list[i].dt_txt.split(' ')[0]; 
+            var vuosi = paivamaara_apu.split('-')[0];
+            var kuukausi = paivamaara_apu.split('-')[1];
+            var paiva = paivamaara_apu.split('-')[2];
+            var paivamaara = paiva + '.'+ kuukausi + '.'+ vuosi;
 
             //kellonaika splitataan kaksoispisteestä, ja jätetään sekunnit pois näytettävästä osasta
-            kellonaika_apu = response.data.list[index].dt_txt.split(' ')[1];
-            tunnit = kellonaika_apu.split(':')[0];
-            minuutit = kellonaika_apu.split(':')[1];
-            kellonaika = tunnit + '.' + minuutit;
+            var kellonaika_apu = response.data.list[i].dt_txt.split(' ')[1];
+            var tunnit = kellonaika_apu.split(':')[0];
+            var minuutit = kellonaika_apu.split(':')[1];
+            var kellonaika = tunnit + '.' + minuutit;
 
-
-            // lisätään säätieto muokatun päivämäärän ja kellonajan kanssa sää-listalle
+            // lisätään säätieto sekä muokattu päivämäärä ja kellonaika sää-listalle. Muokataan
+            // samalla tuuli ja lämpötila numeroarvoiksi ja pyöristetään yhteen desimaaliin
             app.saa.push({
             paiva: paivamaara,
             kellonaika: 'klo ' + kellonaika,
-            saakuvaus: response.data.list[index].weather[0].description,
-            tuuli: {arvo:Number(response.data.list[index].wind.speed).toFixed(1), yksikko:'m/s'},
-            lampotila: {arvo: Number(response.data.list[index].main.temp).toFixed(1), yksikko: ' °C'},
-            kuvanosoite: "https://openweathermap.org/img/wn/"+response.data.list[index].weather[0].icon+"@2x.png",
+            tuuli: {arvo:Number(response.data.list[i].wind.speed).toFixed(1), yksikko:'m/s'},
+            lampotila: {arvo: Number(response.data.list[i].main.temp).toFixed(1), yksikko: ' °C'},
+            kuvanosoite: "https://openweathermap.org/img/wn/"+response.data.list[i].weather[0].icon+"@2x.png",
             });
           }
         })
@@ -96,21 +92,21 @@ var app = new Vue({
         app.saa = [];
         app.virheilmoitus = '';
         // haetaan tämä päivä ja viisi seuraavaa päivää
-        for (index = 0; index < 6; ++index) { 
-            var someDate = new Date(); //haetaan tämä päivä
-            someDate.setDate(someDate.getDate() + index); // lisätään tähän päivään kierrosluvun mukainen määrä päiviä
-            var paiva = someDate.getDate(); // irrotetaan saadusta päivämäärästä päivä
-            var kk = someDate.getMonth() + 1; // irrotetaan saadusta päivämäärästä kuukausi
-            var vuosi = someDate.getFullYear(); // irrotetaan saadusta päivämäärästä vuosi
+        for (i = 0; i < 6; ++i) { 
+            var tanaan = new Date(); //haetaan tämä päivä
+            tanaan.setDate(tanaan.getDate() + i); // lisätään tähän päivään kierrosluvun mukainen määrä päiviä
+            var paiva = tanaan.getDate(); // irrotetaan saadusta päivämäärästä päivä
+            var kk = tanaan.getMonth() + 1; // irrotetaan saadusta päivämäärästä kuukausi
+            var vuosi = tanaan.getFullYear(); // irrotetaan saadusta päivämäärästä vuosi
             // muotoillaan päivämäärä uudestaan siten, että yksittäisten numeroiden eteen tulee nolla
             // eli lisätään päivän ja kuukauden numeron eteen nolla ja sen jälkeen valitaan kaksi viimeistä merkkiä
-            DateString = (('0'+paiva).slice(-2) +'.'+ ('0'+kk).slice(-2) +'.'+ vuosi);
+            paivamaara = (('0'+paiva).slice(-2) +'.'+ ('0'+kk).slice(-2) +'.'+ vuosi);
             // haetaan päivämäärää vastaava viikonpäivä
-            var weekdays = ['su','ma','ti','ke','to','pe','la'];
-            var weekday  = weekdays[someDate.getDay()];
+            var viikonpaivat = ['su','ma','ti','ke','to','pe','la'];
+            var viikonpaiva  = viikonpaivat[tanaan.getDay()];
             //lisätään kierroksen päätteeksi päivämäärä+viikonpäivä listalle  
             //app.paivamaarat.push(DateString);            
-            app.paivamaarat.push({paivamaara: DateString, viikonpaiva: weekday}); 
+            app.paivamaarat.push({paivamaara: paivamaara, viikonpaiva: viikonpaiva}); 
         }
 
         //tämä päivä on päivämäärälistan ensimmäisenä alkiona
@@ -125,9 +121,9 @@ var app = new Vue({
         this.getAnswer();
     },
     asetaPaiva: function(){
-      app.valittuPaiva = event.target.id;
+      app.valittuPaiva = event.target.id; //asetetaan valituksi päiväksi se päivä, mitä nappia painetaan
     },
-    asetaPaikkakunta: function(kunta){
+    asetaPaikkakunta: function(kunta){//käytetään pikavalinnoissa paikkakunnan asettamiseen
       app.paikkakunta = kunta;
       this.haePaivamaarat();
     },  

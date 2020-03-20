@@ -37,21 +37,21 @@
       <br><br>
 
 
-      <!-- komponentti, tulostaa valitun päivän säätiedot näkyville -->
-      <saa-item class='samaRivi' id="saaruutu" v-for="item in saa" v-if="item.paiva==valittuPaiva" v-bind:key="item.id" :saa="item"></saa-item>
+      <!-- komponentti, tulostaa valitun päivän säätiedot näkyville, ensimmäinen if-lause, jotta sääruudun muotoilu ei tulostu liian aikaisin -->
+      <div v-if="saa.length != 1">
+        <saa-item class='samaRivi' id="saaruutu"  v-for="item in saa" v-if="item.paiva==valittuPaiva" v-bind:key="item.id" :saa="item"></saa-item>
+      </div>
          
       <!--  tähän tulostuu virheilmoitus, jos etsittyä kaupunkia ei löydy-->
       <h4 align='center'>{{ virheilmoitus }}</h4> 
-
 
         
     </div>
 
     <!--scriptien järjestyksellä on väliä-->
-
     <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="saa2.js"></script>
+    <script src="saaennuste.js"></script>
     
   </body>
 </html>
