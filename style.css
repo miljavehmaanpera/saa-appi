@@ -14,7 +14,7 @@ button{
     font-weight: bold;
     padding: 3px 10px;
     border-radius: 15px;
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2) 6px 20px 0 rgba(0,0,0,0.19);
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2) 6px 20px 0 rgba(240, 182, 182, 0.19);
 }
 
 body{

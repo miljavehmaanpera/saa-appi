@@ -8,4 +8,4 @@ Lämpöasteet näytetään punaisella ja pakkasasteet sinisellä.
 
 Jos tuulilukema on yli 6m/s, näytetään varoitusmerkki lukeman vieressä (raja-arvo päätetty itse oman mieltymyksen mukaan).
 
-Viimeiseltä päivältä ei näy kaikkia ennusteita, koska ennusteita on vain viidelle vuorokaudelle eteenpäin. Myöskään tältä päivältä ei näy kaikkia menneitä ennusteita.
+Viimeiseltä päivältä ei näy kaikkia ennusteita, koska ennusteita on vain viidelle vuorokaudelle eteenpäin. Myöskään tältä päivältä ei näy kaikkia menneitä ennusteita. 

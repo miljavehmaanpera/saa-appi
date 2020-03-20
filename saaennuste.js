@@ -15,7 +15,7 @@ Vue.component('saa-item', {
             </div>`,
 })//tuulen raja laitettu oman mieltymyksen mukaan, ei perustu oikeisiin määräyksiin
 
-
+ 
 Vue.component('saaennuste', {
   template: `<h1>Sääennuste</h1>`
 })
